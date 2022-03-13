@@ -9,7 +9,7 @@ def get_item():
             it.item_name as name,
             it.description as description,
             it.image as image,
-            it.rating as rating,
+            cast(IFNULL(sum(rt.rating)/count(rt.name), 0) as int) as rating,
             ip.price_list_rate as price,
             count(cmt.name) as comments,
             it.modified as modified
@@ -23,6 +23,10 @@ def get_item():
             `tabItem Comments` cmt
         on
             it.item_code = cmt.item
+        left join
+            `tabItem Rating` rt
+        on
+            it.item_code = rt.item
         group by
             it.item_code
         order by
